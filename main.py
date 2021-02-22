@@ -3,10 +3,10 @@ import matplotlib.pyplot as plt
 
 
 class Perceptron:
-    def __init__(self, initial_theta=None, initial_offset=0, through_origin=False, max_loops=10000,
+    def __init__(self, initial_theta=None, initial_offset=0, margins=False, through_origin=False, max_loops=10000,
                  visual=False, debugging=False):
         if initial_theta is None:
-            initial_theta = [0, 0]
+            initial_theta = [0.0, 0.0]
         self.theta = np.array(initial_theta)
         self.offset = initial_offset
         self.through_origin = through_origin
@@ -14,6 +14,7 @@ class Perceptron:
         self.changed = True
         self.converged = True
         self.max_loops = max_loops
+        self.margins = margins
         self.visual = visual
         self.debugging = debugging
 
@@ -60,7 +61,7 @@ class Perceptron:
         if main1 != main2:
             plt.axline(main1, main2, color='darkgreen' if self.converged else 'darkviolet', linewidth=2, zorder=20)
 
-        if self.converged:
+        if self.converged and self.margins:
             margin1_x1, margin1_x2 = standard_line_to_points(self.theta[0], self.theta[1], self.offset - 1)
             plt.axline(margin1_x1, margin1_x2, color='green', zorder=20)
 
@@ -115,13 +116,12 @@ def standard_line_to_points(a, b, c):
 
 
 def main():
-    x_1 = [[2, 5], 1]
-    x_2 = [[2, 0], -1]
-    x_3 = [[0, 3], -1]
+    x_1 = [[np.cos(np.pi), 0], 1]
+    x_2 = [[0, np.cos(np.pi * 2)], 1]
 
-    t_data = [x_1]
+    t_data = [x_1, x_2]
 
-    perceptron = Perceptron(visual=True, debugging=True)
+    perceptron = Perceptron(visual=True, debugging=True, through_origin=True)
     training_set, training_labels = perceptron.format_data(t_data)
     perceptron.train(training_set, training_labels)
 
